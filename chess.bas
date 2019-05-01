@@ -1,7 +1,10 @@
-SCREEN _NEWIMAGE(500, 500, 32)
+SCREEN _NEWIMAGE(500, 550, 32)
+_LIMIT 15
 
 DIM SHARED arrayW(7, 7) AS INTEGER, arrayB(7, 7) AS INTEGER 'un array par joueur
-DIM canPlay AS INTEGER
+DIM canPlay AS INTEGER '0 = gameover
+DIM pX AS INTEGER, pY AS INTEGER, dX AS INTEGER, dY AS INTEGER
+DIM selected AS STRING 'coord du pion selectionne par le joueur
 DIM SHARED pawnB, pawnW, rookB, rookW, knightB, knightW, kingB, kingW, bishopB, bishopW, queenB, queenW, board AS LONG 'une image par type de pion
 board = _LOADIMAGE("Assets/board.png") 'plateau
 pawnB = _LOADIMAGE("Assets/pawnB.png")
@@ -17,11 +20,41 @@ queenW = _LOADIMAGE("Assets/queenW.png")
 bishopB = _LOADIMAGE("Assets/bishopB.png")
 bishopW = _LOADIMAGE("Assets/bishopW.png")
 canPlay = 1
+currentPlayerTurn = 1 'White
 
-CALL setPawnArray
-CALL showPawns
+CALL setPawnArray 'je set mes deux arrays
+
+choice:
+CALL showPawns 'j'affiche
+LOCATE 30, 1
+IF currentPlayerTurn = 1 THEN
+    INPUT "White, choisissez un pion (XY):"; selected
+    pX = VAL(MID$(selected, 1, 1)): pY = VAL(MID$(selected, 2, 1))
+    IF pX > 7 OR pY > 7 THEN GOTO choice 'selection d'un pion or limite d'array
+    IF arrayW(pX, pY) > 0 THEN
+        INPUT "White, choisissez une destination (XY):"; selected
+        dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
+        IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
+        IF arrayW(dX, dY) = 0 THEN
+            arrayB(dX, dY) = 0 'kill le pion adversaire
+            arrayW(dX, dY) = arrayW(pX, pY) 'deplace le pion
+            arrayW(pX, pY) = 0
+        ELSE
+            GOTO choice 'si pion deja existant a cet emplacement
+        END IF
+    ELSE
+        GOTO choice
+    END IF
+    currentPlayerTurn = 2
+ELSE
+    INPUT "Black, choisissez un pion (XY):"; selected
+    currentPlayerTurn = 1
+END IF
+
+GOTO choice
 
 SUB showPawns 'permet l'affichage de tous les pions et du plateau
+    CLS
     _PUTIMAGE (0, 0), board
     posY = 14
     FOR y = 0 TO 7
