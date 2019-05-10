@@ -35,18 +35,9 @@ IF currentPlayerTurn = 1 THEN
         INPUT "White, choisissez une destination (XY):"; selected
         dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
         IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
-        IF move(arrayW, pX, pY, dX, dY) = 0 THEN
+        IF move(arrayW(), pX, pY, dX, dY) = 0 THEN
             GOTO choice
         END IF
-
-
-        'IF arrayW(dX, dY) = 0 THEN
-        '    arrayB(dX, dY) = 0 'kill le pion adversaire
-        'arrayW(dX, dY) = arrayW(pX, pY) 'deplace le pion
-        'arrayW(pX, pY) = 0
-        'ELSE
-        '    GOTO choice 'si pion deja existant a cet emplacement
-        'END IF
     ELSE
         GOTO choice
     END IF
@@ -58,15 +49,16 @@ END IF
 
 GOTO choice
 
-FUNCTION move (currentArray, x, y, newX, newY)
-    IF currentArray(newX, newY) = 0 THEN
+FUNCTION move (ByRef%(), x, y, newX, newY)
+    IF ByRef%(newX, newY) = 0 THEN
         arrayW(newX, newY) = 0
-        arrayX(newX, newY) = 0
+        arrayB(newX, newY) = 0
     ELSE
-        move = 0 'return0
+        move = 0
+        EXIT FUNCTION
     END IF
-    currentArray(newX, newY) = currentAray(x, y)
-    currentAray(x, y) = 0
+    ByRef%(newX, newY) = ByRef%(x, y)
+    ByRef%(x, y) = 0
     move = 1
 END FUNCTION
 
