@@ -4,9 +4,6 @@ CONST PAWNDISTANCEPX = 53
 CONST WHITE = 1
 CONST BLACK = 2
 DIM SHARED arrayW(7, 7) AS INTEGER, arrayB(7, 7) AS INTEGER 'un array par joueur
-DIM canPlay AS INTEGER '0 = gameover
-DIM pX AS INTEGER, pY AS INTEGER, dX AS INTEGER, dY AS INTEGER
-DIM selected AS STRING 'coord du pion selectionne par le joueur
 DIM SHARED pawnB, pawnW, rookB, rookW, knightB, knightW, kingB, kingW, bishopB, bishopW, queenB, queenW, board AS LONG 'une image par type de pion
 board = _LOADIMAGE("Assets/board.png") 'plateau
 pawnB = _LOADIMAGE("Assets/pawnB.png")
@@ -21,13 +18,12 @@ queenB = _LOADIMAGE("Assets/queenB.png")
 queenW = _LOADIMAGE("Assets/queenW.png")
 bishopB = _LOADIMAGE("Assets/bishopB.png")
 bishopW = _LOADIMAGE("Assets/bishopW.png")
-canPlay = 1
 currentPlayerTurn = WHITE
 
 CALL setPawnArray 'je set mes deux arrays
 
 choice:
-IF currentPlayerTurn = 1 THEN
+IF currentPlayerTurn = WHITE THEN
     CALL guessPlayer("WHITE", arrayW())
     currentPlayerTurn = BLACK
 ELSE
@@ -36,7 +32,7 @@ ELSE
 END IF
 GOTO choice
 
-SUB guessPlayer (colPlayer$, currArray%())
+SUB guessPlayer (colPlayer AS STRING, currArray%())
     DIM selected AS STRING
     choice:
     CALL showPawns 'j'affiche
