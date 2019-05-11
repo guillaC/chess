@@ -1,6 +1,8 @@
 SCREEN _NEWIMAGE(500, 550, 32)
 _LIMIT 15
-
+CONST PAWNDISTANCEPX = 53
+CONST WHITE = 1
+CONST BLACK = 2
 DIM SHARED arrayW(7, 7) AS INTEGER, arrayB(7, 7) AS INTEGER 'un array par joueur
 DIM canPlay AS INTEGER '0 = gameover
 DIM pX AS INTEGER, pY AS INTEGER, dX AS INTEGER, dY AS INTEGER
@@ -20,7 +22,7 @@ queenW = _LOADIMAGE("Assets/queenW.png")
 bishopB = _LOADIMAGE("Assets/bishopB.png")
 bishopW = _LOADIMAGE("Assets/bishopW.png")
 canPlay = 1
-currentPlayerTurn = 1 'White
+currentPlayerTurn = WHITE
 
 CALL setPawnArray 'je set mes deux arrays
 
@@ -41,12 +43,23 @@ IF currentPlayerTurn = 1 THEN
     ELSE
         GOTO choice
     END IF
-    currentPlayerTurn = 2
+    currentPlayerTurn = BLACK
 ELSE
     INPUT "Black, choisissez un pion (XY):"; selected
-    currentPlayerTurn = 1
+    pX = VAL(MID$(selected, 1, 1)): pY = VAL(MID$(selected, 2, 1))
+    IF pX > 7 OR pY > 7 THEN GOTO choice 'selection d'un pion or limite d'array
+    IF arrayB(pX, pY) > 0 THEN
+        INPUT "Black, choisissez une destination (XY):"; selected
+        dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
+        IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
+        IF move(arrayB(), pX, pY, dX, dY) = 0 THEN
+            GOTO choice
+        END IF
+    ELSE
+        GOTO choice
+    END IF
+    currentPlayerTurn = WHITE
 END IF
-
 GOTO choice
 
 FUNCTION move (ByRef%(), x, y, newX, newY)
@@ -73,23 +86,23 @@ SUB showPawns 'permet l'affichage de tous les pions et du plateau
                 SELECT CASE arrayB(x, y)
                     CASE 1: _PUTIMAGE (posX, posY), pawnB
                     CASE 2: _PUTIMAGE (posX, posY), rookB
-                    CASE 6: _PUTIMAGE (posX, posY), kingB
                     CASE 3: _PUTIMAGE (posX, posY), knightB
-                    CASE 5: _PUTIMAGE (posX, posY), queenB
                     CASE 4: _PUTIMAGE (posX, posY), bishopB
+                    CASE 5: _PUTIMAGE (posX, posY), queenB
+                    CASE 6: _PUTIMAGE (posX, posY), kingB
                 END SELECT
                 SELECT CASE arrayW(x, y)
                     CASE 1: _PUTIMAGE (posX, posY), pawnW
                     CASE 2: _PUTIMAGE (posX, posY), rookW
-                    CASE 6: _PUTIMAGE (posX, posY), kingW
                     CASE 3: _PUTIMAGE (posX, posY), knightW
-                    CASE 5: _PUTIMAGE (posX, posY), queenW
                     CASE 4: _PUTIMAGE (posX, posY), bishopW
+                    CASE 5: _PUTIMAGE (posX, posY), queenW
+                    CASE 6: _PUTIMAGE (posX, posY), kingW
                 END SELECT
             END IF
-            posX = posX + 53
+            posX = posX + PAWNDISTANCEPX
         NEXT
-        posY = posY + 53
+        posY = posY + PAWNDISTANCEPX
     NEXT
     _DISPLAY
 END SUB
