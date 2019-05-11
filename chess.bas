@@ -27,51 +27,47 @@ currentPlayerTurn = WHITE
 CALL setPawnArray 'je set mes deux arrays
 
 choice:
-CALL showPawns 'j'affiche
-LOCATE 30, 1
 IF currentPlayerTurn = 1 THEN
-    INPUT "White, choisissez un pion (XY):"; selected
-    pX = VAL(MID$(selected, 1, 1)): pY = VAL(MID$(selected, 2, 1))
-    IF pX > 7 OR pY > 7 THEN GOTO choice 'selection d'un pion or limite d'array
-    IF arrayW(pX, pY) > 0 THEN
-        INPUT "White, choisissez une destination (XY):"; selected
-        dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
-        IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
-        IF move(arrayW(), pX, pY, dX, dY) = 0 THEN
-            GOTO choice
-        END IF
-    ELSE
-        GOTO choice
-    END IF
+    CALL guessPlayer("WHITE", arrayW())
     currentPlayerTurn = BLACK
 ELSE
-    INPUT "Black, choisissez un pion (XY):"; selected
-    pX = VAL(MID$(selected, 1, 1)): pY = VAL(MID$(selected, 2, 1))
-    IF pX > 7 OR pY > 7 THEN GOTO choice 'selection d'un pion or limite d'array
-    IF arrayB(pX, pY) > 0 THEN
-        INPUT "Black, choisissez une destination (XY):"; selected
-        dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
-        IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
-        IF move(arrayB(), pX, pY, dX, dY) = 0 THEN
-            GOTO choice
-        END IF
-    ELSE
-        GOTO choice
-    END IF
+    CALL guessPlayer("BLACK", arrayB())
     currentPlayerTurn = WHITE
 END IF
 GOTO choice
 
-FUNCTION move (ByRef%(), x, y, newX, newY)
-    IF ByRef%(newX, newY) = 0 THEN
+SUB guessPlayer (colPlayer$, currArray%())
+    DIM selected AS STRING
+    choice:
+    CALL showPawns 'j'affiche
+    LOCATE 30, 1
+    PRINT colPlayer
+    INPUT "choisissez un pion (XY):"; selected
+    pX = VAL(MID$(selected, 1, 1)): pY = VAL(MID$(selected, 2, 1))
+    IF pX > 7 OR pY > 7 THEN GOTO choice 'selection d'un pion or limite d'array
+    IF currArray%(pX, pY) > 0 THEN
+        INPUT "choisissez une destination (XY):"; selected
+        dX = VAL(MID$(selected, 1, 1)): dY = VAL(MID$(selected, 2, 1))
+        IF dX > 7 OR dY > 7 THEN GOTO choice 'selection d'une destination hors limite d'array
+        IF move(currArray%(), pX, pY, dX, dY) = 0 THEN
+            GOTO choice
+        END IF
+    ELSE
+        GOTO choice
+    END IF
+END FUNCTION
+
+
+FUNCTION move (currArray%(), x, y, newX, newY)
+    IF currArray%(newX, newY) = 0 THEN
         arrayW(newX, newY) = 0
         arrayB(newX, newY) = 0
     ELSE
         move = 0
         EXIT FUNCTION
     END IF
-    ByRef%(newX, newY) = ByRef%(x, y)
-    ByRef%(x, y) = 0
+    currArray%(newX, newY) = currArray%(x, y)
+    currArray%(x, y) = 0
     move = 1
 END FUNCTION
 
