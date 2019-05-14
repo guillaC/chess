@@ -1,8 +1,11 @@
-SCREEN _NEWIMAGE(500, 550, 32)
+SCREEN _NEWIMAGE(500, 650, 32)
 _LIMIT 15
 CONST PAWNDISTANCEPX = 53
 CONST WHITE = 1
 CONST BLACK = 2
+DIM SHARED outW(15) AS INTEGER, outB(15) AS INTEGER
+
+DIM SHARED outWCounter AS INTEGER, outBCounter AS INTEGER
 DIM SHARED arrayW(7, 7) AS INTEGER, arrayB(7, 7) AS INTEGER 'un array par joueur
 DIM SHARED pawnB, pawnW, rookB, rookW, knightB, knightW, kingB, kingW, bishopB, bishopW, queenB, queenW, board AS LONG 'une image par type de pion
 board = _LOADIMAGE("Assets/board.png") 'plateau
@@ -36,6 +39,7 @@ SUB guessPlayer (colPlayer AS STRING, currArray%())
     DIM selected AS STRING
     choice:
     CALL showPawns 'j'affiche
+    CALL showOut
     LOCATE 30, 1
     PRINT colPlayer
     INPUT "choisissez un pion (XY):"; selected
@@ -56,6 +60,7 @@ END FUNCTION
 
 FUNCTION move (currArray%(), x, y, newX, newY)
     IF currArray%(newX, newY) = 0 THEN
+        CALL outWB(newX, newY)
         arrayW(newX, newY) = 0
         arrayB(newX, newY) = 0
     ELSE
@@ -66,6 +71,51 @@ FUNCTION move (currArray%(), x, y, newX, newY)
     currArray%(x, y) = 0
     move = 1
 END FUNCTION
+
+SUB outWB (x, y)
+    IF arrayW(x, y) > 0 THEN
+        outW(outWCounter) = arrayW(x, y)
+        outWCounter = outWCounter + 1
+    END IF
+    IF arrayB(x, y) > 0 THEN
+        outB(outBCounter) = arrayB(x, y)
+        outBCounter = outBCounter + 1
+    END IF
+END SUB
+
+SUB showOut
+    posY = 500
+    posX = 14
+    FOR x = 0 TO 15
+        IF outB(x) > 0 THEN
+            SELECT CASE outB(x)
+                CASE 1: _PUTIMAGE (posX, posY), pawnB
+                CASE 2: _PUTIMAGE (posX, posY), rookB
+                CASE 3: _PUTIMAGE (posX, posY), knightB
+                CASE 4: _PUTIMAGE (posX, posY), bishopB
+                CASE 5: _PUTIMAGE (posX, posY), queenB
+                CASE 6: _PUTIMAGE (posX, posY), kingB
+            END SELECT
+            posX = posX + PAWNDISTANCEPX
+        END IF
+    NEXT
+    posY = posY + PAWNDISTANCEPX
+    posX = 14
+    FOR x = 0 TO 15
+        IF outW(x) > 0 THEN
+            SELECT CASE outB(x)
+                CASE 1: _PUTIMAGE (posX, posY), pawnW
+                CASE 2: _PUTIMAGE (posX, posY), rookW
+                CASE 3: _PUTIMAGE (posX, posY), knightW
+                CASE 4: _PUTIMAGE (posX, posY), bishopW
+                CASE 5: _PUTIMAGE (posX, posY), queenW
+                CASE 6: _PUTIMAGE (posX, posY), kingW
+            END SELECT
+            posX = posX + PAWNDISTANCEPX
+        END IF
+    NEXT
+
+END SUB
 
 SUB showPawns 'permet l'affichage de tous les pions et du plateau
     CLS
@@ -111,4 +161,10 @@ SUB setPawnArray
         arrayB(x, 7) = VAL(MID$("23456432", x + 1, 1))
         arrayW(x, 0) = VAL(MID$("23456432", x + 1, 1))
     NEXT
+
+    FOR x = 0 TO 14
+        outB(x) = 0
+        outW(x) = 0
+    NEXT
+
 END SUB
