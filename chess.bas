@@ -96,7 +96,7 @@ SUB showOut
                 CASE 5: _PUTIMAGE (posX, posY), queenB
                 CASE 6: _PUTIMAGE (posX, posY), kingB
             END SELECT
-            posX = posX + PAWNDISTANCEPX
+            posX = posX + 10
         END IF
     NEXT
     posY = posY + PAWNDISTANCEPX
@@ -111,7 +111,7 @@ SUB showOut
                 CASE 5: _PUTIMAGE (posX, posY), queenW
                 CASE 6: _PUTIMAGE (posX, posY), kingW
             END SELECT
-            posX = posX + PAWNDISTANCEPX
+            posX = posX + 10
         END IF
     NEXT
 
